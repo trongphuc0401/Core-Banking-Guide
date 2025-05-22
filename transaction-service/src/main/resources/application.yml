@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: transaction-service
+  datasource:
+#    url: jdbc:postgresql://postgres:5432/customer_service_db
+    url: jdbc:postgresql://localhost:5433/customer_service_db
+    username: customer_user
+    password: customer_pass
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: transaction-group
+      auto-offset-reset: earliest
+server:
+  port: 8071
+customer-service:
+  url: http://localhost:8080/api/customers
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+  instance:
+    preferIpAddress: true

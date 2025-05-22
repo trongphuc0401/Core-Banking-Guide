@@ -1,0 +1,81 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    web-application-type: reactive
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: transaction-service
+          uri: lb://TRANSACTIONS
+          predicates:
+            - Path=/api/transactions/**
+          filters:
+            - StripPrefix=1
+        - id: transaction-service-swagger
+          uri: lb://TRANSACTIONS
+          predicates:
+            - Path=/transaction-api/**
+          filters:
+            - StripPrefix=1
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+    config:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/banking-realm
+  redis:
+    host: localhost
+    port: 6379
+server:
+  port: 8072
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,gateway
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: customer-service
+        url: /customer-api/v3/api-docs
+      - name: transaction-service
+        url: /transaction-api/v3/api-docs
+  api-docs:
+    enabled: false
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    preferIpAddress: true
+
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: TRACE
+    com.netflix.discovery: DEBUG
+    org.springframework.web.reactive.function.client: DEBUG
+
+# C?u hình DNS ?? gi?i quy?t v?n ?? phân gi?i tên mi?n - docker
+---
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        pool:
+          max-connections: 1000
+          acquire-timeout: 45000
+        connect-timeout: 2000
+        response-timeout: 10s
